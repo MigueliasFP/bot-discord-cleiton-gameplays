@@ -1,0 +1,85 @@
+import discord
+import random
+from discord.ext import commands
+import os
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='/', intents=intents)
+client = discord.Client(intents=intents)
+
+def acha_imagem():
+    imagem = random.choice(os.listdir('images'))
+    return imagem
+def acha_imagem_anime():
+    image = random.choice(os.listdir('animes_image'))
+    return image
+
+@bot.event
+async def on_ready():
+    print(f'Estamos logados como {bot.user}')
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Olá! eu sou um bot {bot.user}!')
+
+@bot.command()
+async def slap(ctx, members: commands.Greedy[discord.Member], *, reason='por nada'):
+    slapped = ", ".join(x.name for x in members)
+    await ctx.send(f'bati em {slapped} {reason}')
+
+@bot.command()
+async def meme(ctx):
+    with open(f'images/{acha_imagem()}', 'rb') as f:
+        #Vamos armazenar o arquivo convertido da biblioteca do Discord nesta variável!
+        picture = discord.File(f)
+    # Podemos então enviar esse arquivo como um parâmetro
+    await ctx.send(file=picture)
+@bot.command()
+async def memes(ctx):
+    with open(f'animes_image/{acha_imagem_anime()}', 'rb') as f:
+        #Vamos armazenar o arquivo convertido da biblioteca do Discord nesta variável!
+        pictures = discord.File(f)
+    # Podemos então enviar esse arquivo como um parâmetro
+    await ctx.send(file=pictures)
+
+@bot.command()
+async def joined(ctx, member: discord.Member):
+    """Says when a member joined."""
+    await ctx.send(f'{member.name} joined {discord.utils.format_dt(member.joined_at)}')
+
+@bot.command()
+async def roll(ctx, dice: str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await ctx.send('Format has to be in NdN!')
+        return
+
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await ctx.send(result)
+
+@bot.command()
+async def add(ctx, left: int, right: int):
+    """Adds two numbers together."""
+    await ctx.send(left + right)
+
+@bot.command()
+async def escolha_jogo(ctx):
+    lista_de_jogos = ["Minecraft Ice and fire", "Minecraft Terraria", "minecraft animes", "jjs", "Roblox", "Terraria", "100 Dias", "100 dias", "terrariA", "Smash legends", "Repo", "Peak", "repo", "peak", "Terramity", "terramity", "terramitY"]
+    d = random.choice(lista_de_jogos)
+    return d
+    await ctx.send(d)
+    
+
+@bot.command()
+async def test(ctx, arg):
+    await ctx.send(arg)
+
+@bot.command()
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
+
+bot.run("Código do seu bot")
